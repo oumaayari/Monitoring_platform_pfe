@@ -31,14 +31,28 @@ mongoose.connect('mongodb://localhost:27017/monitoring_platform', {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Routes
-app.use('/users',AuthService, userRoutes);
-app.use('/profiles', profileRoutes);
-app.use('/assignments', assignmentRoutes);
-app.use('/activities', activityRoutes);
-app.use('/missions', missionRoutes);
-app.use('/submissions', submissionRoutes);
+const verifyToken = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (!token) {
+    return res.status(403).json({ message: 'Token is required' });
+  }
 
+  jwt.verify(token, config.secret, (err, decoded) => {
+    if (err) {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+    req.user = decoded;
+    next();
+  });
+};
+
+// Routes
+app.use('/authentification' , AuthService );
+app.use('/profiles', AuthService.verifyToken, profileRoutes);
+app.use('/assignments', AuthService.verifyToken, assignmentRoutes);
+app.use('/activities', AuthService.verifyToken, activityRoutes);
+app.use('/missions', AuthService.verifyToken, missionRoutes);
+app.use('/submissions', AuthService.verifyToken, submissionRoutes);
 
 // Port du serveur
 const PORT = process.env.PORT || 3000;

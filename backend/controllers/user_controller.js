@@ -1,3 +1,7 @@
+const jwt = require('jsonwebtoken');
+const config = require('../config/auth_config');
+const AuthService = require('../services/authentication_service');
+
 const User = require('../models/User');
 
 async function signUp(req, res) {
@@ -12,6 +16,8 @@ async function signUp(req, res) {
 
     const newUser = new User({ username, email, password, role });
     await newUser.save();
+     const token = AuthService.generateToken(newUser); 
+
 
     res.status(201).json({ message: 'User signed up successfully' });
   } catch (error) {

@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-
+const AuthService = require('./services/authentication_service');
+const config = require('./config/auth_config');
 
 
 const userRoutes = require('./routes/user_route');
@@ -10,12 +12,12 @@ const assignmentRoutes = require('./routes/assignment_route');
 const activityRoutes = require('./routes/activity_route');
 const missionRoutes = require('./routes/mission_route');
 const submissionRoutes = require('./routes/submission_route');
-const AuthService = require('./services/authentication_service');
+
 
 const app = express();
 
 
-mongoose.connect('mongodb://localhost:27017/monitoring_platform', {
+mongoose.connect('mongodb://localhost:27017/monitoring-platform', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -47,7 +49,7 @@ const verifyToken = (req, res, next) => {
 };
 
 // Routes
-app.use('/authentification' , AuthService );
+app.use('/Users' , AuthService.verifyToken, userRoutes );
 app.use('/profiles', AuthService.verifyToken, profileRoutes);
 app.use('/assignments', AuthService.verifyToken, assignmentRoutes);
 app.use('/activities', AuthService.verifyToken, activityRoutes);
@@ -55,7 +57,7 @@ app.use('/missions', AuthService.verifyToken, missionRoutes);
 app.use('/submissions', AuthService.verifyToken, submissionRoutes);
 
 // Port du serveur
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3003;
 
 // Lancement du serveur
 app.listen(PORT, () => {

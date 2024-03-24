@@ -1,9 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken');
+//const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-const AuthService = require('./services/authentication_service');
-const config = require('./config/auth_config');
+//const AuthService = require('./services/authentication_service');
+//const config = require('./config/auth_config');
 
 
 const userRoutes = require('./routes/user_route');
@@ -33,31 +33,31 @@ mongoose.connect('mongodb://localhost:27017/monitoring-platform', {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers['authorization'];
-  if (!token) {
-    return res.status(403).json({ message: 'Token is required' });
-  }
+//const verifyToken = (req, res, next) => {
+  //const token = req.headers['authorization'];
+  //if (!token) {
+  //  return res.status(403).json({ message: 'Token is required' });
+  //}
 
-  jwt.verify(token, config.secret, (err, decoded) => {
-    if (err) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-    req.user = decoded;
-    next();
-  });
-};
+ // jwt.verify(token, config.secret, (err, decoded) => {
+ //   if (err) {
+   //   return res.status(401).json({ message: 'Invalid token' });
+   // }
+    //req.user = decoded;
+   // next();
+ // });
+//};
 
 // Routes
-app.use('/Users' , AuthService.verifyToken, userRoutes );
-app.use('/profiles', AuthService.verifyToken, profileRoutes);
-app.use('/assignments', AuthService.verifyToken, assignmentRoutes);
-app.use('/activities', AuthService.verifyToken, activityRoutes);
-app.use('/missions', AuthService.verifyToken, missionRoutes);
-app.use('/submissions', AuthService.verifyToken, submissionRoutes);
+app.use('/users' , userRoutes );
+app.use('/profiles', profileRoutes);
+app.use('/assignments', assignmentRoutes);
+app.use('/activities',  activityRoutes);
+app.use('/missions', missionRoutes);
+app.use('/submissions',  submissionRoutes);
 
 // Port du serveur
-const PORT = process.env.PORT || 3003;
+const PORT = process.env.PORT || 3004;
 
 // Lancement du serveur
 app.listen(PORT, () => {

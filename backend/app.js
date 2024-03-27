@@ -1,10 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
-//const jwt = require('jsonwebtoken');
 const bodyParser = require('body-parser');
-//const AuthService = require('./services/authentication_service');
-//const config = require('./config/auth_config');
-
+const cookieParser = require('cookie-parser');
+const AuthService = require('./services/authentication_service');
 
 const userRoutes = require('./routes/user_route');
 const profileRoutes = require('./routes/profile_route');
@@ -12,10 +10,10 @@ const assignmentRoutes = require('./routes/assignment_route');
 const activityRoutes = require('./routes/activity_route');
 const missionRoutes = require('./routes/mission_route');
 const submissionRoutes = require('./routes/submission_route');
+const topicRoutes = require('./routes/topic_route');
 
 
 const app = express();
-
 
 mongoose.connect('mongodb://localhost:27017/monitoring-platform', {
   useNewUrlParser: true,
@@ -29,37 +27,28 @@ mongoose.connect('mongodb://localhost:27017/monitoring-platform', {
   process.exit(1);
 });
 
-
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cookieParser());
 
-//const verifyToken = (req, res, next) => {
-  //const token = req.headers['authorization'];
-  //if (!token) {
-  //  return res.status(403).json({ message: 'Token is required' });
-  //}
-
- // jwt.verify(token, config.secret, (err, decoded) => {
- //   if (err) {
-   //   return res.status(401).json({ message: 'Invalid token' });
-   // }
-    //req.user = decoded;
-   // next();
- // });
-//};
+// Middleware d'authentification
+app.use(AuthService.verifyToken);
 
 // Routes
-app.use('/users' , userRoutes );
+app.use('/users', userRoutes);
 app.use('/profiles', profileRoutes);
 app.use('/assignments', assignmentRoutes);
-app.use('/activities',  activityRoutes);
+app.use('/activities', activityRoutes);
 app.use('/missions', missionRoutes);
-app.use('/submissions',  submissionRoutes);
+app.use('/submissions', submissionRoutes);
+app.use('/topics', topicRoutes);
+
 
 // Port du serveur
-const PORT = process.env.PORT || 3004;
+const PORT = process.env.PORT || 3003;
 
 // Lancement du serveur
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
+
